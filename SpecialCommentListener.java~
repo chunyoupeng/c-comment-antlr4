@@ -1,0 +1,28 @@
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.*;
+
+public class SpecialCommentListener extends CBaseListener {
+    private TokenStreamRewriter rewriter;
+
+    public SpecialCommentListener(TokenStream tokens) {
+        this.rewriter = new TokenStreamRewriter(tokens);
+    }
+
+    @Override
+    public void visitTerminal(TerminalNode node) {
+        Token symbol = node.getSymbol();
+	System.out.println("Nornal comment is " + symbol.getText());
+        if (symbol.getType() == CParser.SpecialComment) {
+            String commentText = symbol.getText();
+	    System.out.println("Get comment is " + commentText);
+            if (commentText.contains("racket")) {
+                rewriter.insertBefore(symbol, "struct racket {};\n");
+            }
+            // 可以根据需要处理其他特殊注释
+        }
+    }
+
+    public String getResult() {
+        return rewriter.getText();
+    }
+}
